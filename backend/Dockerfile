@@ -1,36 +1,28 @@
-# Use official Python image
 FROM python:3.12-slim
 
-# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install system deps (optional but common)
+# System deps
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 # Install uv
 RUN curl -Ls https://astral.sh/uv/install.sh | sh
+
+# IMPORTANT: make uv available
 ENV PATH="/root/.local/bin:${PATH}"
 
-# Set work directory
 WORKDIR /app
 
-# Copy project files
 COPY . .
 
-# Create virtual environment
-RUN uv venv
-
-# Install dependencies
-
-# Or if using pyproject.toml:
+# Install dependencies (NO uv venv needed)
 RUN uv sync
 
-# Expose port
 EXPOSE 8000
 
-# Run Django for production
 CMD ["uv", "run", "gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000"]
