@@ -64,3 +64,6 @@ steps:
 images:
   - "gcr.io/$PROJECT_ID/django-backend"
   - "gcr.io/$PROJECT_ID/nextjs-frontend"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
