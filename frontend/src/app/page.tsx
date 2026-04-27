@@ -53,7 +53,7 @@ export default function WeatherCharts() {
     <div style={{ background: "#111", color: "white", padding: 20 }}>
       {renderChart("temperature", "#ff7300", "Temperature")}
       {renderChart("humidity", "#00c49f", "Humidity")}
-      {renderChart("pressure", "#8884d8", "Pressure", [940, 980])}
+      {renderChart("pressure", "#8884d8", "Pressure", [950, 990])}
     </div>
   );
 }
