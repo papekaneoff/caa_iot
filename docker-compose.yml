@@ -3,11 +3,11 @@ services:
     build:
       context: ./backend
     container_name: django_backend
-    command: uv run python manage.py runserver 0.0.0.0:8000
+    command: uv run python manage.py runserver 0.0.0.0:8080
     volumes:
       - ./backend:/app
     ports:
-      - "8000:8000"
+      - "8080:8080"
     env_file:
       - ./backend/.env
 
@@ -22,6 +22,6 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_DJANGO_API_URL=https://django-backend-50284710838.europe-west1.run.app
     depends_on:
       - backend

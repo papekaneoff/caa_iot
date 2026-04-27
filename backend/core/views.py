@@ -14,7 +14,7 @@ def weather_data(request):
             pressure,
             timestamp
         FROM `caaproject-490112.weather.weather-data`
-        ORDER BY timestamp DESC
+        ORDER BY timestamp ASC
         LIMIT 200
     """
 
