@@ -10,7 +10,7 @@ import {
   ResponsiveContainer
 } from "recharts";
 
-export default function WeatherChart() {
+export default function WeatherCharts() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -19,29 +19,34 @@ export default function WeatherChart() {
       .then(setData);
   }, []);
 
-  return (
-    <div style={{ width: "100%", height: 400 }}>
-      <h2>Weather Data</h2>
-
+  const renderChart = (key, color, title) => (
+    <div style={{ width: "100%", height: 300, marginBottom: 40 }}>
+      <h3>{title}</h3>
       <ResponsiveContainer>
         <LineChart data={data}>
-          <XAxis dataKey="timestamp" hide />
+          <XAxis
+            dataKey="timestamp"
+            tickFormatter={(t) => new Date(t).toLocaleTimeString()}
+          />
           <YAxis />
           <Tooltip />
 
           <Line
             type="monotone"
-            dataKey="temperature"
-            stroke="#ff7300"
-          />
-
-          <Line
-            type="monotone"
-            dataKey="humidity"
-            stroke="#387908"
+            dataKey={key}
+            stroke={color}
+            dot={false}
           />
         </LineChart>
       </ResponsiveContainer>
+    </div>
+  );
+
+  return (
+    <div style={{ background: "#111", color: "white", padding: 20 }}>
+      {renderChart("temperature", "#ff7300", "Temperature")}
+      {renderChart("humidity", "#00c49f", "Humidity")}
+      {renderChart("pressure", "#8884d8", "Pressure")}
     </div>
   );
 }
