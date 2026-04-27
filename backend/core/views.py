@@ -15,7 +15,6 @@ def weather_data(request):
             timestamp
         FROM `caaproject-490112.weather.weather-data`
         ORDER BY timestamp ASC
-        LIMIT 200
     """
 
     results = client.query(query).result()
