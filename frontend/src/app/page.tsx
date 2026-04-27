@@ -10,8 +10,14 @@ import {
   ResponsiveContainer
 } from "recharts";
 
-export default function WeatherCharts() {
-  const [data, setData] = useState([]);
+type WeatherPoint = {
+  timestamp: string;
+  temperature: number;
+  humidity: number;
+  pressure: number;
+};
+
+const [data, setData] = useState<WeatherPoint[]>([]);
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_DJANGO_API_URL}/api/weather/`)
@@ -19,7 +25,11 @@ export default function WeatherCharts() {
       .then(setData);
   }, []);
 
-  const renderChart = (key, color, title) => (
+  const renderChart = (
+    key: string,
+    color: string,
+    title: string
+  ) => (
     <div style={{ width: "100%", height: 300, marginBottom: 40 }}>
       <h3>{title}</h3>
       <ResponsiveContainer>
@@ -39,14 +49,6 @@ export default function WeatherCharts() {
           />
         </LineChart>
       </ResponsiveContainer>
-    </div>
-  );
-
-  return (
-    <div style={{ background: "#111", color: "white", padding: 20 }}>
-      {renderChart("temperature", "#ff7300", "Temperature")}
-      {renderChart("humidity", "#00c49f", "Humidity")}
-      {renderChart("pressure", "#8884d8", "Pressure")}
     </div>
   );
 }
