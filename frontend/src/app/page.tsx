@@ -29,7 +29,8 @@ export default function WeatherCharts() {
   const renderChart = (
     key: string,
     color: string,
-    title: string
+    title: string,
+    yDomain?: [number, number]
   ) => (
     <div style={{ width: "100%", height: 300, marginBottom: 40 }}>
       <h3>{title}</h3>
@@ -39,7 +40,7 @@ export default function WeatherCharts() {
             dataKey="timestamp"
             tickFormatter={(t) => new Date(t).toLocaleTimeString()}
           />
-          <YAxis />
+          <YAxis domain={yDomain ?? ["auto", "auto"]} />
           <Tooltip />
 
           <Line type="monotone" dataKey={key} stroke={color} dot={false} />
@@ -52,7 +53,7 @@ export default function WeatherCharts() {
     <div style={{ background: "#111", color: "white", padding: 20 }}>
       {renderChart("temperature", "#ff7300", "Temperature")}
       {renderChart("humidity", "#00c49f", "Humidity")}
-      {renderChart("pressure", "#8884d8", "Pressure")}
+      {renderChart("pressure", "#8884d8", "Pressure", [940, 980])}
     </div>
   );
 }
