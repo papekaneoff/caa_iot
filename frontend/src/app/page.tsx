@@ -17,7 +17,8 @@ type WeatherPoint = {
   pressure: number;
 };
 
-const [data, setData] = useState<WeatherPoint[]>([]);
+export default function WeatherCharts() {
+  const [data, setData] = useState<WeatherPoint[]>([]);
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_DJANGO_API_URL}/api/weather/`)
@@ -41,14 +42,17 @@ const [data, setData] = useState<WeatherPoint[]>([]);
           <YAxis />
           <Tooltip />
 
-          <Line
-            type="monotone"
-            dataKey={key}
-            stroke={color}
-            dot={false}
-          />
+          <Line type="monotone" dataKey={key} stroke={color} dot={false} />
         </LineChart>
       </ResponsiveContainer>
+    </div>
+  );
+
+  return (
+    <div style={{ background: "#111", color: "white", padding: 20 }}>
+      {renderChart("temperature", "#ff7300", "Temperature")}
+      {renderChart("humidity", "#00c49f", "Humidity")}
+      {renderChart("pressure", "#8884d8", "Pressure")}
     </div>
   );
 }
