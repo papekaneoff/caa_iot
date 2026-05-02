@@ -12,7 +12,9 @@ def weather_data(request):
             temperature,
             humidity,
             pressure,
-            timestamp
+            timestamp,
+            tvoc,
+            eco2
         FROM `caaproject-490112.weather.weather-data`
         ORDER BY timestamp ASC
     """
@@ -26,7 +28,9 @@ def weather_data(request):
             "temperature": row.temperature,
             "humidity": row.humidity,
             "pressure": row.pressure,
-            "timestamp": row.timestamp.isoformat()
+            "timestamp": row.timestamp.isoformat(),
+            "tvoc": row.tvoc,
+            "eco2": row.eco2,
         })
 
     return JsonResponse(data, safe=False)

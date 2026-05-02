@@ -15,6 +15,8 @@ type WeatherPoint = {
   temperature: number;
   humidity: number;
   pressure: number;
+  tvoc: number;
+  eco2: number;
 };
 
 export default function WeatherCharts() {
@@ -54,6 +56,8 @@ export default function WeatherCharts() {
       {renderChart("temperature", "#ff7300", "Temperature")}
       {renderChart("humidity", "#00c49f", "Humidity")}
       {renderChart("pressure", "#8884d8", "Pressure", [950, 990])}
+      {renderChart("tvoc", "#ff4d4f", "TVOC")}
+      {renderChart("eco2", "#52c41a", "eCO₂")}
     </div>
   );
 }
