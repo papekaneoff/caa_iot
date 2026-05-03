@@ -5,6 +5,9 @@ from django.http import JsonResponse
 
 import os
 import requests
+import logging
+
+logger = logging.getLogger(__name__)
 
 client = bigquery.Client()
 
@@ -40,7 +43,10 @@ def sensor_data(request):
 
 
 def openweather(request):
-    city = request.GET.get("city", "Lausanne")
+    # ✅ Get city from query params, fallback to Lausanne
+    city = (request.GET.get("city", "").strip() or "Lausanne")
+
+    logger.info(f"OpenWeather request for city: {city}")
 
     base_url = "https://api.openweathermap.org/data/2.5"
 

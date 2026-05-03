@@ -35,6 +35,41 @@ type WeatherFull = {
 export default function WeatherDashboard() {
   const [sensorData, setSensorData] = useState<WeatherPoint[]>([]);
   const [weather, setWeather] = useState<WeatherFull | null>(null);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [city, setCity] = useState("Lausanne");
+
+  const fetchWeather = async (selectedCity: string): Promise<void> => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch(
+        `/api/openweather?city=${encodeURIComponent(selectedCity)}`
+      );
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch weather");
+      }
+
+      const result = await res.json();
+      setData(result);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Unknown error occurred");
+      }
+    }
+    finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = () => {
+    fetchWeather(city);
+  };
 
   useEffect(() => {
     // sensor / IoT data
@@ -82,6 +117,19 @@ export default function WeatherDashboard() {
   return (
     <div style={{ background: "#111", color: "white", padding: 20 }}>
       {/* CURRENT WEATHER */}
+      <input
+        value={city}
+        onChange={(e) => setCity(e.target.value)}
+        placeholder="Enter city"
+        style={{ padding: 8, marginRight: 10 }}
+      />
+
+      <button onClick={handleSearch} disabled={loading}>
+        {loading ? "Loading..." : "Get Weather"}
+      </button>
+
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
       <h2>{weather.current.city}</h2>
       <div style={{ marginBottom: 30 }}>
         🌡️ {weather.current.temp}°C <br />
