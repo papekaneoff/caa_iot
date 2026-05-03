@@ -46,7 +46,7 @@ def openweather(request):
 
     params = {
         "q": city,
-        "appid": os.environ["OPENWEATHER_KEY"],
+        "appid": os.environ["OPENWEATHER_API_KEY"],
         "units": "metric"
     }
 
