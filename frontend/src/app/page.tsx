@@ -75,7 +75,7 @@ export default function WeatherDashboard() {
   if (!weather) return <div style={{ padding: 20 }}>Loading...</div>;
 
   const forecastData = weather.forecast.map((item) => ({
-    time: new Date(item.time).toLocaleString(),
+    time: item.time, // keep raw ISO / dt_txt
     temp: item.temp,
   }));
 
@@ -94,9 +94,26 @@ export default function WeatherDashboard() {
         <h3>Forecast Temperature</h3>
         <ResponsiveContainer>
           <LineChart data={forecastData}>
-            <XAxis dataKey="time" hide />
+            <XAxis
+              dataKey="time"
+              tickFormatter={(t) =>
+                new Date(t).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              }
+              minTickGap={20}
+            />
             <YAxis />
-            <Tooltip />
+            <Tooltip
+              labelFormatter={(label) =>
+                new Date(label).toLocaleString([], {
+                  weekday: "short",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              }
+            />
             <Line
               type="monotone"
               dataKey="temp"
