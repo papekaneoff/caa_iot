@@ -54,7 +54,7 @@ export default function WeatherDashboard() {
       }
 
       const result = await res.json();
-      setData(result);
+      setWeather(result);
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
