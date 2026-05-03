@@ -59,7 +59,7 @@ steps:
         "--region", "europe-west1",
         "--platform", "managed",
         "--allow-unauthenticated",
-        "--set-env-vars", "NEXT_PUBLIC_DJANGO_API_URL=NEXT_PUBLIC_DJANGO_API_URL:latest"
+        "--set-env-vars", "NEXT_PUBLIC_DJANGO_API_URL=https://django-backend-50284710838.europe-west1.run.app"
       ]
 
 images:
