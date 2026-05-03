@@ -28,7 +28,7 @@ steps:
         "--region", "europe-west1",
         "--platform", "managed",
         "--allow-unauthenticated",
-        '--set-secrets', 'DJANGO_SECRET_KEY=DJANGO_SECRET_KEY:latest',
+        '--set-secrets', 'DJANGO_SECRET_KEY=DJANGO_SECRET_KEY:latest,OPENWEATHER_API_KEY=OPENWEATHER_API_KEY:latest',
       ]
 
   # -------------------------
