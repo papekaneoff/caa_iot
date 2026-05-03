@@ -27,7 +27,8 @@ steps:
         "--image", "gcr.io/$PROJECT_ID/django-backend",
         "--region", "europe-west1",
         "--platform", "managed",
-        "--allow-unauthenticated"
+        "--allow-unauthenticated",
+        '--set-secrets', 'DJANGO_SECRET_KEY=DJANGO_SECRET_KEY:latest',
       ]
 
   # -------------------------
@@ -57,7 +58,8 @@ steps:
         "--image", "gcr.io/$PROJECT_ID/nextjs-frontend",
         "--region", "europe-west1",
         "--platform", "managed",
-        "--allow-unauthenticated"
+        "--allow-unauthenticated",
+        "--set-env-vars", "NEXT_PUBLIC_DJANGO_API_URL=NEXT_PUBLIC_DJANGO_API_URL:latest"
       ]
 
 images:
