@@ -46,7 +46,7 @@ export default function WeatherDashboard() {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_DJANGO_API_URL}/api/openweather?city=${encodeURIComponent(selectedCity)}`
+        `${process.env.NEXT_PUBLIC_DJANGO_API_URL}/api/openweather/?city=${encodeURIComponent(selectedCity)}`
       );
 
       if (!res.ok) {
