@@ -39,6 +39,7 @@ steps:
       [
         "build",
         "-t", "gcr.io/$PROJECT_ID/nextjs-frontend",
+        "--build-arg", "NEXT_PUBLIC_DJANGO_API_URL=https://django-backend-50284710838.europe-west1.run.app",
         "./frontend"
       ]
 
@@ -58,8 +59,7 @@ steps:
         "--image", "gcr.io/$PROJECT_ID/nextjs-frontend",
         "--region", "europe-west1",
         "--platform", "managed",
-        "--allow-unauthenticated",
-        "--set-env-vars", "NEXT_PUBLIC_DJANGO_API_URL=https://django-backend-50284710838.europe-west1.run.app"
+        "--allow-unauthenticated"
       ]
 
 images:
