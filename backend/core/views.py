@@ -76,9 +76,17 @@ def openweather(request):
         "city": current_res.get("name"),
         "temp": current_res["main"]["temp"],
         "feels_like": current_res["main"]["feels_like"],
+        "temp_min": current_res["main"]["temp_min"],
+        "temp_max": current_res["main"]["temp_max"],
         "humidity": current_res["main"]["humidity"],
         "pressure": current_res["main"]["pressure"],
         "description": current_res["weather"][0]["description"],
+        "icon": current_res["weather"][0]["icon"],
+        "wind_speed": current_res["wind"]["speed"],
+        "clouds": current_res["clouds"]["all"],
+        "sunrise": current_res["sys"]["sunrise"],
+        "sunset": current_res["sys"]["sunset"],
+        "visibility": current_res.get("visibility"),
     }
 
     forecast = [
