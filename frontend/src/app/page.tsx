@@ -206,7 +206,9 @@ export default function WeatherDashboard() {
                 })
               }
               formatter={(value, name) => {
+                if (name === "humidity") return [`${value}%`, "Humidity"];
                 if (name === "pop") return [`${value}%`, "Rain Chance"];
+                if (name === "temp") return [`${value}°C`, "Temperature"];
                 return [value, name];
               }}
             />
