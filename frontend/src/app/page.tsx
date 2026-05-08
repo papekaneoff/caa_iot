@@ -23,19 +23,38 @@ type WeatherFull = {
   current: {
     city: string;
     temp: number;
+    feels_like: number;
+    temp_min: number;
+    temp_max: number;
     humidity: number;
+    pressure: number;
     description: string;
+    icon: string;
+    wind_speed: number;
+    clouds: number;
+    sunrise: number;
+    sunset: number;
+    visibility: number | null;
   };
   forecast: {
     time: string;
     temp: number;
+    humidity: number;
+    pop?: number;
+    wind_speed?: number;
+    description?: string;
   }[];
 };
+
+const formatTime = (ts: number) =>
+  new Date(ts * 1000).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
 export default function WeatherDashboard() {
   const [sensorData, setSensorData] = useState<WeatherPoint[]>([]);
   const [weather, setWeather] = useState<WeatherFull | null>(null);
-  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [city, setCity] = useState("Lausanne");
@@ -110,8 +129,10 @@ export default function WeatherDashboard() {
   if (!weather) return <div style={{ padding: 20 }}>Loading...</div>;
 
   const forecastData = weather.forecast.map((item) => ({
-    time: item.time, // keep raw ISO / dt_txt
+    time: item.time,
     temp: item.temp,
+    humidity: item.humidity,
+    pop: item.pop ? item.pop * 100 : 0, // convert to %
   }));
 
   return (
@@ -132,14 +153,34 @@ export default function WeatherDashboard() {
 
       <h2>{weather.current.city}</h2>
       <div style={{ marginBottom: 30 }}>
-        🌡️ {weather.current.temp}°C <br />
-        💧 {weather.current.humidity}% <br />
-        ☁️ {weather.current.description}
+        <img
+          src={`https://openweathermap.org/img/wn/${weather.current.icon}@2x.png`}
+          alt="weather icon"
+        />
+
+        <div>🌡️ {weather.current.temp}°C (feels {weather.current.feels_like}°C)</div>
+        <div>📉 Min: {weather.current.temp_min}°C | 📈 Max: {weather.current.temp_max}°C</div>
+
+        <div>💧 Humidity: {weather.current.humidity}%</div>
+        <div>ضغط Pressure: {weather.current.pressure} hPa</div>
+
+        <div>🌬️ Wind: {weather.current.wind_speed} m/s</div>
+        <div>☁️ Clouds: {weather.current.clouds}%</div>
+
+        <div>👁️ Visibility: {weather.current.visibility ?? "N/A"} m</div>
+
+        <div>🌅 Sunrise: {formatTime(weather.current.sunrise)}</div>
+        <div>🌇 Sunset: {formatTime(weather.current.sunset)}</div>
+
+        <div style={{ textTransform: "capitalize" }}>
+          ☁️ {weather.current.description}
+        </div>
       </div>
 
       {/* FORECAST CHART */}
       <div style={{ width: "100%", height: 300, marginBottom: 50 }}>
-        <h3>Forecast Temperature</h3>
+        <h3>Forecast Overview</h3>
+
         <ResponsiveContainer>
           <LineChart data={forecastData}>
             <XAxis
@@ -152,7 +193,9 @@ export default function WeatherDashboard() {
               }
               minTickGap={20}
             />
+
             <YAxis />
+
             <Tooltip
               labelFormatter={(label) =>
                 new Date(label).toLocaleString([], {
@@ -161,11 +204,33 @@ export default function WeatherDashboard() {
                   minute: "2-digit",
                 })
               }
+              formatter={(value, name) => {
+                if (name === "pop") return [`${value}%`, "Rain Chance"];
+                return [value, name];
+              }}
             />
+
+            {/* Temperature */}
             <Line
               type="monotone"
               dataKey="temp"
               stroke="#ff7300"
+              dot={false}
+            />
+
+            {/* Humidity */}
+            <Line
+              type="monotone"
+              dataKey="humidity"
+              stroke="#00c49f"
+              dot={false}
+            />
+
+            {/* Rain probability */}
+            <Line
+              type="monotone"
+              dataKey="pop"
+              stroke="#1890ff"
               dot={false}
             />
           </LineChart>

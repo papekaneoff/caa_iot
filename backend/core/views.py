@@ -93,7 +93,8 @@ def openweather(request):
         {
             "time": item["dt_txt"],
             "temp": item["main"]["temp"],
-            "humidity": item["main"]["humidity"]
+            "humidity": item["main"]["humidity"],
+            "pop": item.get("pop", 0),
         }
         for item in forecast_res["list"]
     ]
