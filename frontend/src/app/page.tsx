@@ -243,7 +243,7 @@ export default function WeatherDashboard() {
       {/* SENSOR CHARTS */}
       {renderChart("temperature", "#ff7300", "Temperature Indoor")}
       {renderChart("humidity", "#00c49f", "Humidity Indoor")}
-      {renderChart("pressure", "#8884d8", "Pressure Indoor", [950, 990])}
+      {renderChart("pressure", "#8884d8", "Pressure Indoor")}
       {renderChart("tvoc", "#ff4d4f", "TVOC Indoor")}
       {renderChart("eco2", "#52c41a", "eCO₂ Indoor")}
     </div>
