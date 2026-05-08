@@ -22,19 +22,25 @@ type WeatherPoint = {
 type WeatherFull = {
   current: {
     city: string;
-    temp: number;
-    feels_like: number;
-    temp_min: number;
-    temp_max: number;
+    temp_c: number;
+    temp_f: number;
+    feels_like_c: number;
+    feels_like_f: number;
+    temp_min_c: number;
+    temp_min_f: number;
+    temp_max_c: number;
+    temp_max_f: number;
     humidity: number;
     pressure: number;
     description: string;
     icon: string;
-    wind_speed: number;
+    wind_speed_ms: number;
+    wind_speed_mph: number;
     clouds: number;
     sunrise: number;
     sunset: number;
-    visibility: number | null;
+    visibility_m: number | null;
+    visibility_miles: number | null;
   };
   forecast: {
     time: string;
@@ -58,6 +64,7 @@ export default function WeatherDashboard() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [city, setCity] = useState("Lausanne");
+  const [unit, setUnit] = useState<"metric" | "imperial">("metric");
 
   const fetchWeather = async (selectedCity: string): Promise<void> => {
     setLoading(true);
@@ -128,6 +135,36 @@ export default function WeatherDashboard() {
 
   if (!weather) return <div style={{ padding: 20 }}>Loading...</div>;
 
+  const isMetric = unit === "metric";
+
+  const currentTemp = isMetric
+    ? weather.current.temp_c
+    : weather.current.temp_f;
+
+  const feelsLike = isMetric
+    ? weather.current.feels_like_c
+    : weather.current.feels_like_f;
+
+  const tempMin = isMetric
+    ? weather.current.temp_min_c
+    : weather.current.temp_min_f;
+
+  const tempMax = isMetric
+    ? weather.current.temp_max_c
+    : weather.current.temp_max_f;
+
+  const windSpeed = isMetric
+    ? weather.current.wind_speed_ms
+    : weather.current.wind_speed_mph;
+
+  const visibility = isMetric
+    ? weather.current.visibility_m
+    : weather.current.visibility_miles;
+
+  const tempUnit = isMetric ? "°C" : "°F";
+  const windUnit = isMetric ? "m/s" : "mph";
+  const visibilityUnit = isMetric ? "m" : "miles";
+
   const forecastData = weather.forecast.map((item) => ({
     time: item.time,
     temp: item.temp,
@@ -151,6 +188,30 @@ export default function WeatherDashboard() {
 
       {error && <p style={{ color: "red" }}>{error}</p>}
 
+      <button
+        onClick={() => setUnit("metric")}
+        style={{
+          marginLeft: 10,
+          background: unit === "metric" ? "#444" : "#222",
+          color: "white",
+          padding: "8px 12px",
+        }}
+      >
+        °C
+      </button>
+
+      <button
+        onClick={() => setUnit("imperial")}
+        style={{
+          marginLeft: 5,
+          background: unit === "imperial" ? "#444" : "#222",
+          color: "white",
+          padding: "8px 12px",
+        }}
+      >
+        °F
+      </button>
+
       <h2>{weather.current.city}</h2>
       <div style={{ marginBottom: 30 }}>
         <img
@@ -158,16 +219,28 @@ export default function WeatherDashboard() {
           alt="weather icon"
         />
 
-        <div>🌡️ {weather.current.temp}°C (feels {weather.current.feels_like}°C)</div>
-        <div>📉 Min: {weather.current.temp_min}°C | 📈 Max: {weather.current.temp_max}°C</div>
+        <div>
+          🌡️ {currentTemp}{tempUnit}
+          {" "}
+          (feels {feelsLike}{tempUnit})
+        </div>
+        <div>
+          📉 Min: {tempMin}{tempUnit}
+          {" | "}
+          📈 Max: {tempMax}{tempUnit}
+        </div>
 
         <div>💧 Humidity: {weather.current.humidity}%</div>
         <div>🎈 Pressure: {weather.current.pressure} hPa</div>
 
-        <div>🌬️ Wind: {weather.current.wind_speed} m/s</div>
+        <div>
+          🌬️ Wind: {windSpeed} {windUnit}
+        </div>
         <div>☁️ Clouds: {weather.current.clouds}%</div>
 
-        <div>👁️ Visibility: {weather.current.visibility ?? "N/A"} m</div>
+        <div>
+          👁️ Visibility: {visibility ?? "N/A"} {visibilityUnit}
+        </div>
 
         <div>🌅 Sunrise: {formatTime(weather.current.sunrise)}</div>
         <div>🌇 Sunset: {formatTime(weather.current.sunset)}</div>
@@ -208,7 +281,7 @@ export default function WeatherDashboard() {
               formatter={(value, name) => {
                 if (name === "humidity") return [`${value}%`, "Humidity"];
                 if (name === "pop") return [`${value}%`, "Rain Chance"];
-                if (name === "temp") return [`${value}°C`, "Temperature"];
+                if (name === "temp") return [`${value}${tempUnit}`, "Temperature"];
                 return [value, name];
               }}
             />

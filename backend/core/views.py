@@ -43,6 +43,15 @@ def sensor_data(request):
 
 
 def openweather(request):
+    def c_to_f(c):
+        return round((c * 9/5) + 32, 1)
+
+    def ms_to_mph(ms):
+        return round(ms * 2.23694, 1)
+
+    def meters_to_miles(m):
+        return round(m * 0.000621371, 1)
+
     # ✅ Get city from query params, fallback to Lausanne
     city = (request.GET.get("city", "").strip() or "Lausanne")
 
@@ -74,19 +83,25 @@ def openweather(request):
 
     current = {
         "city": current_res.get("name"),
-        "temp": current_res["main"]["temp"],
-        "feels_like": current_res["main"]["feels_like"],
-        "temp_min": current_res["main"]["temp_min"],
-        "temp_max": current_res["main"]["temp_max"],
+        "temp_c": current_res["main"]["temp"],
+        "temp_f": c_to_f(current_res["main"]["temp"]),
+        "feels_like_c": current_res["main"]["feels_like"],
+        "feels_like_f": c_to_f(current_res["main"]["feels_like"]),
+        "temp_min_c": current_res["main"]["temp_min"],
+        "temp_min_f": c_to_f(current_res["main"]["temp_min"]),
+        "temp_max_c": current_res["main"]["temp_max"],
+        "temp_max_f": c_to_f(current_res["main"]["temp_max"]),
         "humidity": current_res["main"]["humidity"],
         "pressure": current_res["main"]["pressure"],
         "description": current_res["weather"][0]["description"],
         "icon": current_res["weather"][0]["icon"],
-        "wind_speed": current_res["wind"]["speed"],
+        "wind_speed_ms": current_res["wind"]["speed"],
+        "wind_speed_mph": ms_to_mph(current_res["wind"]["speed"]),
         "clouds": current_res["clouds"]["all"],
         "sunrise": current_res["sys"]["sunrise"],
         "sunset": current_res["sys"]["sunset"],
-        "visibility": current_res.get("visibility"),
+        "visibility_m": current_res.get("visibility"),
+        "visibility_miles": meters_to_miles(current_res.get("visibility", 0)),
     }
 
     forecast = [
