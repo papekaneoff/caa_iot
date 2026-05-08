@@ -146,7 +146,7 @@ export default function WeatherDashboard() {
       />
 
       <button onClick={handleSearch} disabled={loading}>
-        {loading ? "Loading..." : "Get Weather"}
+        {loading ? "Loading..." : "Get Weather Forecast"}
       </button>
 
       {error && <p style={{ color: "red" }}>{error}</p>}
@@ -186,12 +186,13 @@ export default function WeatherDashboard() {
             <XAxis
               dataKey="time"
               tickFormatter={(t) =>
-                new Date(t).toLocaleTimeString([], {
+                new Date(t).toLocaleString([], {
+                  weekday: "short",
                   hour: "2-digit",
                   minute: "2-digit",
                 })
               }
-              minTickGap={20}
+              minTickGap={30}
             />
 
             <YAxis />
