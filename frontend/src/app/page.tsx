@@ -162,7 +162,7 @@ export default function WeatherDashboard() {
         <div>📉 Min: {weather.current.temp_min}°C | 📈 Max: {weather.current.temp_max}°C</div>
 
         <div>💧 Humidity: {weather.current.humidity}%</div>
-        <div>ضغط Pressure: {weather.current.pressure} hPa</div>
+        <div>🎈 Pressure: {weather.current.pressure} hPa</div>
 
         <div>🌬️ Wind: {weather.current.wind_speed} m/s</div>
         <div>☁️ Clouds: {weather.current.clouds}%</div>
@@ -238,11 +238,11 @@ export default function WeatherDashboard() {
       </div>
 
       {/* SENSOR CHARTS */}
-      {renderChart("temperature", "#ff7300", "Temperature")}
-      {renderChart("humidity", "#00c49f", "Humidity")}
-      {renderChart("pressure", "#8884d8", "Pressure", [950, 990])}
-      {renderChart("tvoc", "#ff4d4f", "TVOC")}
-      {renderChart("eco2", "#52c41a", "eCO₂")}
+      {renderChart("temperature", "#ff7300", "Temperature Indoor")}
+      {renderChart("humidity", "#00c49f", "Humidity Indoor")}
+      {renderChart("pressure", "#8884d8", "Pressure Indoor", [950, 990])}
+      {renderChart("tvoc", "#ff4d4f", "TVOC Indoor")}
+      {renderChart("eco2", "#52c41a", "eCO₂ Indoor")}
     </div>
   );
 }
