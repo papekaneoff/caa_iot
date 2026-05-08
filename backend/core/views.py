@@ -107,7 +107,8 @@ def openweather(request):
     forecast = [
         {
             "time": item["dt_txt"],
-            "temp": item["main"]["temp"],
+            "temp_c": item["main"]["temp"],
+            "temp_f": c_to_f(item["main"]["temp"]),
             "humidity": item["main"]["humidity"],
             "pop": item.get("pop", 0),
         }

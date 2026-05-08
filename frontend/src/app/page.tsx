@@ -44,7 +44,8 @@ type WeatherFull = {
   };
   forecast: {
     time: string;
-    temp: number;
+    temp_c: number;
+    temp_f: number;
     humidity: number;
     pop?: number;
     wind_speed?: number;
@@ -161,13 +162,16 @@ export default function WeatherDashboard() {
     ? weather.current.visibility_m
     : weather.current.visibility_miles;
 
+  const forecastTempKey = isMetric ? "temp_c" : "temp_f";
+
   const tempUnit = isMetric ? "°C" : "°F";
   const windUnit = isMetric ? "m/s" : "mph";
   const visibilityUnit = isMetric ? "m" : "miles";
 
   const forecastData = weather.forecast.map((item) => ({
     time: item.time,
-    temp: item.temp,
+    temp_c: item.temp_c,
+    temp_f: item.temp_f,
     humidity: item.humidity,
     pop: item.pop ? item.pop * 100 : 0, // convert to %
   }));
@@ -281,7 +285,9 @@ export default function WeatherDashboard() {
               formatter={(value, name) => {
                 if (name === "humidity") return [`${value}%`, "Humidity"];
                 if (name === "pop") return [`${value}%`, "Rain Chance"];
-                if (name === "temp") return [`${value}${tempUnit}`, "Temperature"];
+                if (name === forecastTempKey) {
+                  return [`${value}${tempUnit}`, "Temperature"];
+                }
                 return [value, name];
               }}
             />
@@ -289,7 +295,7 @@ export default function WeatherDashboard() {
             {/* Temperature */}
             <Line
               type="monotone"
-              dataKey="temp"
+              dataKey={forecastTempKey}
               stroke="#ff7300"
               dot={false}
             />
