@@ -328,20 +328,39 @@ export default function WeatherDashboard() {
             <YAxis />
 
             <Tooltip
+              contentStyle={{
+                backgroundColor: "#1f1f1f",
+                border: "1px solid #333",
+                borderRadius: 12,
+                color: "#fff",
+              }}
+              labelStyle={{
+                color: "#aaa",
+                marginBottom: 8,
+                display: "block",
+              }}
               labelFormatter={(label) =>
                 new Date(label).toLocaleString([], {
                   weekday: "short",
+                  month: "short",
+                  day: "numeric",
                   hour: "2-digit",
                   minute: "2-digit",
                 })
               }
               formatter={(value, name) => {
-                if (name === "humidity") return [`${value}%`, "Humidity"];
-                if (name === "pop") return [`${value}%`, "Rain Chance"];
-                if (name === forecastTempKey) {
-                  return [`${value}${tempUnit}`, "Temperature"];
+                if (value == null) return ["—", name];
+
+                switch (name) {
+                  case "humidity":
+                    return [`${value}%`, "Humidity"];
+                  case "pop":
+                    return [`${value}%`, "Rain Chance"];
+                  case forecastTempKey:
+                    return [`${value}${tempUnit}`, "Temperature"];
+                  default:
+                    return [value, String(name)];
                 }
-                return [value, name];
               }}
             />
 
