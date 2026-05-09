@@ -376,6 +376,8 @@ export default function WeatherDashboard() {
               tickFormatter={(t) =>
                 new Date(t).toLocaleString([], {
                   weekday: "short",
+                  month: "short",
+                  day: "numeric",
                   hour: "2-digit",
                   minute: "2-digit",
                 })
