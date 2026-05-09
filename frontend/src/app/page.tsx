@@ -73,6 +73,28 @@ export default function WeatherDashboard() {
     return `${v} ${unit}`;
   };
 
+  const sensorMeta = {
+    temperature: {
+      label: "Temperature Indoor",
+      unit: unit === "metric" ? "°C" : "°F",
+      format: (v: number) =>
+        unit === "metric" ? v : v * 1.8 + 32,
+    },
+    humidity: { label: "Humidity Indoor", unit: "%", format: (v: number) => v },
+    pressure: { label: "Pressure Indoor", unit: "hPa", format: (v: number) => v },
+    tvoc: { label: "TVOC Indoor", unit: "ppb", format: (v: number) => v },
+    eco2: { label: "eCO₂ Indoor", unit: "ppm", format: (v: number) => v },
+  };
+
+  const convertedSensorData = sensorData.map((d) => ({
+    ...d,
+    temperature:
+      unit === "metric" ? d.temperature : d.temperature * 1.8 + 32,
+  }));
+
+  const convertTemp = (c: number) =>
+    unit === "metric" ? c : c * 1.8 + 32;
+
   const fetchWeather = async (selectedCity: string): Promise<void> => {
     setLoading(true);
     setError(null);
@@ -119,6 +141,7 @@ export default function WeatherDashboard() {
   }, []);
 
   const renderChart = (
+    data: WeatherPoint[],
     dataKey: keyof WeatherPoint,
     color: string,
     title: string,
@@ -131,7 +154,7 @@ export default function WeatherDashboard() {
       </h3>
 
       <ResponsiveContainer>
-        <LineChart data={sensorData}>
+        <LineChart data={data}>
           <XAxis
             dataKey="timestamp"
             tickFormatter={(t) =>
@@ -145,10 +168,7 @@ export default function WeatherDashboard() {
             minTickGap={40}
           />
 
-          <YAxis
-            domain={yDomain ?? ["auto", "auto"]}
-            tickFormatter={(value) => `${value}`}
-          />
+          <YAxis />
 
           <Tooltip
             contentStyle={{
@@ -162,22 +182,29 @@ export default function WeatherDashboard() {
               marginBottom: 8,
               display: "block",
             }}
-            formatter={(value) => [formatValue(value, unit), title]}
-            labelFormatter={(label) =>
-              new Date(label.replace(" UTC", "Z")).toLocaleString([], {
-                weekday: "short",
-                month: "short",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-            }
+            formatter={(value, name) => {
+              if (value == null) return ["—", name];
+
+              if (name === "temperature") {
+                return [
+                  `${convertTemp(Number(value)).toFixed(1)} ${unit === "metric" ? "°C" : "°F"}`,
+                  "Temperature",
+                ];
+              }
+
+              if (name === "humidity") return [`${value}%`, "Humidity"];
+              if (name === "pressure") return [`${value} hPa`, "Pressure"];
+              if (name === "tvoc") return [`${value} ppb`, "TVOC"];
+              if (name === "eco2") return [`${value} ppm`, "eCO₂"];
+
+              return [value, String(name)];
+            }}
           />
 
           <Line
             type="monotone"
-            dataKey={dataKey}
-            stroke={color}
+            dataKey="temperature"
+            stroke="#ff7300"
             strokeWidth={2}
             dot={false}
             activeDot={{ r: 6 }}
@@ -392,11 +419,17 @@ export default function WeatherDashboard() {
       </div>
 
       {/* SENSOR CHARTS */}
-      {renderChart("temperature", "#ff7300", "Temperature Indoor", "°C")}
-      {renderChart("humidity", "#00c49f", "Humidity Indoor", "%")}
-      {renderChart("pressure", "#8884d8", "Pressure Indoor", "hPa")}
-      {renderChart("tvoc", "#ff4d4f", "TVOC Indoor", "ppb")}
-      {renderChart("eco2", "#52c41a", "eCO₂ Indoor", "ppm")}
+      {renderChart(
+        convertedSensorData,
+        "temperature",
+        "#ff7300",
+        `Temperature Indoor`,
+        unit === "metric" ? "°C" : "°F"
+      )}
+      {renderChart(sensorData, "humidity", "#00c49f", "Humidity Indoor", "%")}
+      {renderChart(sensorData, "pressure", "#8884d8", "Pressure Indoor", "hPa")}
+      {renderChart(sensorData, "tvoc", "#ff4d4f", "TVOC Indoor", "ppb")}
+      {renderChart(sensorData, "eco2", "#52c41a", "eCO₂ Indoor", "ppm")}
     </div>
   );
 }
