@@ -11,7 +11,17 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-type WeatherPoint = {
+type SensorPoint = {
+  timestamp: string;
+  temperature_c: number;
+  temperature_f: number;
+  humidity: number;
+  pressure: number;
+  tvoc: number;
+  eco2: number;
+};
+
+type SensorUIPoint = {
   timestamp: string;
   temperature: number;
   humidity: number;
@@ -61,7 +71,7 @@ const formatTime = (ts: number) =>
   });
 
 export default function WeatherDashboard() {
-  const [sensorData, setSensorData] = useState<WeatherPoint[]>([]);
+  const [sensorData, setSensorData] = useState<SensorPoint[]>([]);
   const [weather, setWeather] = useState<WeatherFull | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -86,10 +96,16 @@ export default function WeatherDashboard() {
     eco2: { label: "eCO₂ Indoor", unit: "ppm", format: (v: number) => v },
   };
 
-  const convertedSensorData = sensorData.map((d) => ({
-    ...d,
+  const convertedSensorData: SensorUIPoint[] = sensorData.map((d) => ({
+    timestamp: d.timestamp,
     temperature:
-      unit === "metric" ? d.temperature : d.temperature * 1.8 + 32,
+      unit === "metric"
+        ? d.temperature_c
+        : d.temperature_f,
+    humidity: d.humidity,
+    pressure: d.pressure,
+    tvoc: d.tvoc,
+    eco2: d.eco2,
   }));
 
   const convertTemp = (c: number) =>
@@ -141,8 +157,8 @@ export default function WeatherDashboard() {
   }, []);
 
   const renderChart = (
-    data: WeatherPoint[],
-    dataKey: keyof WeatherPoint,
+    data: SensorUIPoint[],
+    dataKey: keyof SensorUIPoint,
     color: string,
     title: string,
     unit: string,
@@ -426,10 +442,10 @@ export default function WeatherDashboard() {
         `Temperature Indoor`,
         unit === "metric" ? "°C" : "°F"
       )}
-      {renderChart(sensorData, "humidity", "#00c49f", "Humidity Indoor", "%")}
-      {renderChart(sensorData, "pressure", "#8884d8", "Pressure Indoor", "hPa")}
-      {renderChart(sensorData, "tvoc", "#ff4d4f", "TVOC Indoor", "ppb")}
-      {renderChart(sensorData, "eco2", "#52c41a", "eCO₂ Indoor", "ppm")}
+      {renderChart(convertedSensorData, "humidity", "#00c49f", "Humidity Indoor", "%")}
+      {renderChart(convertedSensorData, "pressure", "#8884d8", "Pressure Indoor", "hPa")}
+      {renderChart(convertedSensorData, "tvoc", "#ff4d4f", "TVOC Indoor", "ppb")}
+      {renderChart(convertedSensorData, "eco2", "#52c41a", "eCO₂ Indoor", "ppm")}
     </div>
   );
 }

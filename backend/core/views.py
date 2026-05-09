@@ -11,6 +11,16 @@ logger = logging.getLogger(__name__)
 
 client = bigquery.Client()
 
+def c_to_f(c):
+    return round((c * 9/5) + 32, 1)
+
+def ms_to_mph(ms):
+    return round(ms * 2.23694, 1)
+
+def meters_to_miles(m):
+    return round(m * 0.000621371, 1)
+
+
 def sensor_data(request):
     query = """
         SELECT
@@ -32,7 +42,8 @@ def sensor_data(request):
     for row in results:
         data.append({
             "device_id": row.device_id,
-            "temperature": row.temperature,
+            "temperature_c": row.temperature,
+            "temperature_f": c_to_f(row.temperature),
             "humidity": row.humidity,
             "pressure": row.pressure,
             "timestamp": row.timestamp.isoformat(),
@@ -44,15 +55,6 @@ def sensor_data(request):
 
 
 def openweather(request):
-    def c_to_f(c):
-        return round((c * 9/5) + 32, 1)
-
-    def ms_to_mph(ms):
-        return round(ms * 2.23694, 1)
-
-    def meters_to_miles(m):
-        return round(m * 0.000621371, 1)
-
     # ✅ Get city from query params, fallback to Lausanne
     city = (request.GET.get("city", "").strip() or "Lausanne")
 
