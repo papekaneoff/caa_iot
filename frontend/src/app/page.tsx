@@ -203,7 +203,7 @@ export default function WeatherDashboard() {
 
           <Line
             type="monotone"
-            dataKey="temperature"
+            dataKey={dataKey}
             stroke="#ff7300"
             strokeWidth={2}
             dot={false}
