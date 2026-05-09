@@ -124,10 +124,28 @@ export default function WeatherDashboard() {
         <LineChart data={sensorData}>
           <XAxis
             dataKey="timestamp"
-            tickFormatter={(t) => new Date(t).toLocaleTimeString()}
+            tickFormatter={(t) =>
+              new Date(t.replace(" UTC", "Z")).toLocaleString([], {
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            }
+            minTickGap={30}
           />
           <YAxis domain={yDomain ?? ["auto", "auto"]} />
-          <Tooltip />
+          <Tooltip
+            labelFormatter={(label) =>
+            new Date(label.replace(" UTC", "Z")).toLocaleString([], {
+              weekday: "short",
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          }
+          />
           <Line type="monotone" dataKey={dataKey} stroke={color} dot={false} />
         </LineChart>
       </ResponsiveContainer>
