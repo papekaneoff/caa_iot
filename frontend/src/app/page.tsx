@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ValueType } from "recharts/types/component/DefaultTooltipContent";
 import {
   LineChart,
   Line,
@@ -67,6 +68,11 @@ export default function WeatherDashboard() {
   const [city, setCity] = useState("Lausanne");
   const [unit, setUnit] = useState<"metric" | "imperial">("metric");
 
+  const formatValue = (v: ValueType | undefined, unit: string) => {
+    if (v == null) return "N/A";
+    return `${v} ${unit}`;
+  };
+
   const fetchWeather = async (selectedCity: string): Promise<void> => {
     setLoading(true);
     setError(null);
@@ -116,10 +122,14 @@ export default function WeatherDashboard() {
     dataKey: keyof WeatherPoint,
     color: string,
     title: string,
+    unit: string,
     yDomain?: [number, number]
   ) => (
     <div style={{ width: "100%", height: 300, marginBottom: 40 }}>
-      <h3>{title}</h3>
+      <h3 style={{ marginBottom: 12 }}>
+        {title} ({unit})
+      </h3>
+
       <ResponsiveContainer>
         <LineChart data={sensorData}>
           <XAxis
@@ -132,21 +142,46 @@ export default function WeatherDashboard() {
                 minute: "2-digit",
               })
             }
-            minTickGap={30}
+            minTickGap={40}
           />
-          <YAxis domain={yDomain ?? ["auto", "auto"]} />
+
+          <YAxis
+            domain={yDomain ?? ["auto", "auto"]}
+            tickFormatter={(value) => `${value}`}
+          />
+
           <Tooltip
+            contentStyle={{
+              backgroundColor: "#1f1f1f",
+              border: "1px solid #333",
+              borderRadius: 12,
+              color: "#fff",
+            }}
+            labelStyle={{
+              color: "#aaa",
+              marginBottom: 8,
+              display: "block",
+            }}
+            formatter={(value) => [formatValue(value, unit), title]}
             labelFormatter={(label) =>
-            new Date(label.replace(" UTC", "Z")).toLocaleString([], {
-              weekday: "short",
-              month: "short",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            })
-          }
+              new Date(label.replace(" UTC", "Z")).toLocaleString([], {
+                weekday: "short",
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            }
           />
-          <Line type="monotone" dataKey={dataKey} stroke={color} dot={false} />
+
+          <Line
+            type="monotone"
+            dataKey={dataKey}
+            stroke={color}
+            strokeWidth={2}
+            dot={false}
+            activeDot={{ r: 6 }}
+          />
         </LineChart>
       </ResponsiveContainer>
     </div>
@@ -338,11 +373,11 @@ export default function WeatherDashboard() {
       </div>
 
       {/* SENSOR CHARTS */}
-      {renderChart("temperature", "#ff7300", "Temperature Indoor")}
-      {renderChart("humidity", "#00c49f", "Humidity Indoor")}
-      {renderChart("pressure", "#8884d8", "Pressure Indoor")}
-      {renderChart("tvoc", "#ff4d4f", "TVOC Indoor")}
-      {renderChart("eco2", "#52c41a", "eCO₂ Indoor")}
+      {renderChart("temperature", "#ff7300", "Temperature Indoor", "°C")}
+      {renderChart("humidity", "#00c49f", "Humidity Indoor", "%")}
+      {renderChart("pressure", "#8884d8", "Pressure Indoor", "hPa")}
+      {renderChart("tvoc", "#ff4d4f", "TVOC Indoor", "ppb")}
+      {renderChart("eco2", "#52c41a", "eCO₂ Indoor", "ppm")}
     </div>
   );
 }
