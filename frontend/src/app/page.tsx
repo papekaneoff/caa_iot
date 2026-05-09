@@ -92,19 +92,6 @@ export default function WeatherDashboard() {
       minute: "2-digit",
     });
 
-  const sensorMeta = {
-    temperature: {
-      label: "Temperature Indoor",
-      unit: unit === "metric" ? "°C" : "°F",
-      format: (v: number) =>
-        unit === "metric" ? v : v * 1.8 + 32,
-    },
-    humidity: { label: "Humidity Indoor", unit: "%", format: (v: number) => v },
-    pressure: { label: "Pressure Indoor", unit: "hPa", format: (v: number) => v },
-    tvoc: { label: "TVOC Indoor", unit: "ppb", format: (v: number) => v },
-    eco2: { label: "eCO₂ Indoor", unit: "ppm", format: (v: number) => v },
-  };
-
   const convertedSensorData: SensorUIPoint[] = sensorData.map((d) => ({
     timestamp: d.timestamp,
     temperature:
@@ -169,68 +156,94 @@ export default function WeatherDashboard() {
     title: string,
     unit: string,
     yDomain?: [number, number]
-  ) => (
-    <div style={{ width: "100%", height: 300, marginBottom: 40 }}>
-      <h3 style={{ marginBottom: 12 }}>
-        {title} ({unit})
-      </h3>
+  ) => {
+    // ✅ 1. detect temperature
+    const isTemperature = dataKey === "temperature";
 
-      <ResponsiveContainer>
-        <LineChart data={data}>
-          <XAxis
-            dataKey="timestamp"
-            tickFormatter={(t) => formatDateTime(t)}
-            minTickGap={40}
-          />
+    // ✅ 2. dynamic domain based on dataset
+    const getDomain = (): [number | "auto", number | "auto"] => {
+      const values = data
+        .map((d) => d[dataKey] as number)
+        .filter((v): v is number => typeof v === "number" && !isNaN(v));
 
-          <YAxis />
+      if (values.length === 0) return ["auto", "auto"];
 
-          <Tooltip
-            contentStyle={{
-              backgroundColor: "#1f1f1f",
-              border: "1px solid #333",
-              borderRadius: 12,
-              color: "#fff",
-            }}
-            labelStyle={{
-              color: "#aaa",
-              marginBottom: 8,
-              display: "block",
-            }}
-            labelFormatter={(label) => formatDateTime(label)}
-            formatter={(value, name) => {
-              if (value == null) return ["—", name];
+      const min = Math.min(...values);
+      const max = Math.max(...values);
 
-              if (name === "temperature") {
-                const temp = Number(value);
+      const padding = Math.max((max - min) * 0.1, 1);
 
-                return [
-                  `${temp.toFixed(1)} ${unit === "metric" ? "°C" : "°F"}`,
-                  "Temperature",
-                ];
+      return [min - padding, max + padding];
+    };
+
+    return (
+      <div style={{ width: "100%", height: 300, marginBottom: 40 }}>
+        <h3 style={{ marginBottom: 12 }}>
+          {title} ({unit})
+        </h3>
+
+        <ResponsiveContainer>
+          <LineChart data={data}>
+            <XAxis
+              dataKey="timestamp"
+              tickFormatter={(t) => formatDateTime(t)}
+              minTickGap={40}
+            />
+
+            <YAxis
+              domain={
+                isTemperature
+                  ? getDomain()
+                  : yDomain ?? ["auto", "auto"]
               }
+            />
 
-              if (name === "humidity") return [`${value}%`, "Humidity"];
-              if (name === "pressure") return [`${value} hPa`, "Pressure"];
-              if (name === "tvoc") return [`${value} ppb`, "TVOC"];
-              if (name === "eco2") return [`${value} ppm`, "eCO₂"];
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "#1f1f1f",
+                border: "1px solid #333",
+                borderRadius: 12,
+                color: "#fff",
+              }}
+              labelStyle={{
+                color: "#aaa",
+                marginBottom: 8,
+                display: "block",
+              }}
+              labelFormatter={(label) => formatDateTime(label)}
+              formatter={(value, name) => {
+                if (value == null) return ["—", String(name)];
 
-              return [value, String(name)];
-            }}
-          />
+                if (name === "temperature") {
+                  return [
+                    `${Number(value).toFixed(1)} ${unit}`,
+                    "Temperature",
+                  ];
+                }
 
-          <Line
-            type="monotone"
-            dataKey={dataKey}
-            stroke="#ff7300"
-            strokeWidth={2}
-            dot={false}
-            activeDot={{ r: 6 }}
-          />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
-  );
+                if (name === "humidity") return [`${value}%`, "Humidity"];
+                if (name === "pressure") return [`${value} hPa`, "Pressure"];
+                if (name === "tvoc") return [`${value} ppb`, "TVOC"];
+                if (name === "eco2") return [`${value} ppm`, "eCO₂"];
+
+                return [value, String(name)];
+              }}
+            />
+
+            <Line
+              type="monotone"
+              dataKey={dataKey}
+              name={String(dataKey)}   // IMPORTANT for tooltip consistency
+              stroke={color}
+              strokeWidth={2}
+              dot={false}
+              activeDot={{ r: 6 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    );
+  };
 
   if (!weather) return <div style={{ padding: 20 }}>Loading...</div>;
 
