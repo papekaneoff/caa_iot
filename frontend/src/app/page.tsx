@@ -83,6 +83,15 @@ export default function WeatherDashboard() {
     return `${v} ${unit}`;
   };
 
+  const formatDateTime = (value: string) =>
+    new Date(value).toLocaleString([], {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
   const sensorMeta = {
     temperature: {
       label: "Temperature Indoor",
@@ -107,9 +116,6 @@ export default function WeatherDashboard() {
     tvoc: d.tvoc,
     eco2: d.eco2,
   }));
-
-  const convertTemp = (c: number) =>
-    unit === "metric" ? c : c * 1.8 + 32;
 
   const fetchWeather = async (selectedCity: string): Promise<void> => {
     setLoading(true);
@@ -173,14 +179,7 @@ export default function WeatherDashboard() {
         <LineChart data={data}>
           <XAxis
             dataKey="timestamp"
-            tickFormatter={(t) =>
-              new Date(t.replace(" UTC", "Z")).toLocaleString([], {
-                month: "short",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-            }
+            tickFormatter={(t) => formatDateTime(t)}
             minTickGap={40}
           />
 
@@ -198,12 +197,15 @@ export default function WeatherDashboard() {
               marginBottom: 8,
               display: "block",
             }}
+            labelFormatter={(label) => formatDateTime(label)}
             formatter={(value, name) => {
               if (value == null) return ["—", name];
 
               if (name === "temperature") {
+                const temp = Number(value);
+
                 return [
-                  `${convertTemp(Number(value)).toFixed(1)} ${unit === "metric" ? "°C" : "°F"}`,
+                  `${temp.toFixed(1)} ${unit === "metric" ? "°C" : "°F"}`,
                   "Temperature",
                 ];
               }
