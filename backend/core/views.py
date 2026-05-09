@@ -22,6 +22,7 @@ def sensor_data(request):
             tvoc,
             eco2
         FROM `caaproject-490112.weather.weather-data`
+        WHERE timestamp >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 5 DAY)
         ORDER BY timestamp ASC
     """
 
