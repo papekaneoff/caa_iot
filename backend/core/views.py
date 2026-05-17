@@ -31,7 +31,7 @@ def sensor_data(request):
             timestamp,
             tvoc,
             eco2
-        FROM `caaproject-490112.weather.weather-data`
+        FROM `esoteric-storm-496611-p0.weather.weather-data`
         WHERE timestamp >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 5 DAY)
         ORDER BY timestamp ASC
     """

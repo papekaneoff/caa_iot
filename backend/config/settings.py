@@ -127,5 +127,5 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOWED_ORIGINS = [
-    "https://nextjs-frontend-50284710838.europe-west1.run.app"
+    "https://nextjs-frontend-947281260717.europe-west1.run.app"
 ]
