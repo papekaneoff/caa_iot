@@ -5,13 +5,14 @@ A smart IoT weather monitoring system built with M5Stack devices, Google Cloud, 
 ## 🌐 Live URLs
 - **Frontend Dashboard**: https://nextjs-frontend-947281260717.europe-west1.run.app
 - **Backend API**: https://django-backend-947281260717.europe-west1.run.app
-- **Voice Assistant API**: https://vs-947281260717.europe-west1.run.app
+- **Voice Assistant**: https://vs-947281260717.europe-west1.run.app
+- **Data Ingestion**: https://getweather-947281260717.europe-west1.run.app
 
 ## 👥 Team
 | Name | Contribution |
 |------|-------------|
-| Karim | Backend (Django REST API), Frontend (Next.js dashboard), Cloud infrastructure, BigQuery, OpenWeatherMap integration |
-| Kane | Device interaction — Voice assistant (STT/TTS), presence detection, M5Stack UI, Cloud Run voice service |
+| Karim Al Khadzh | Backend (Django REST API), Frontend (Next.js dashboard), Cloud infrastructure, BigQuery, OpenWeatherMap integration |
+| Pape Kane | Voice assistant Cloud Run service (`vs`), data ingestion service (`getweather`), M5Stack device UI, Speech-to-Text/Text-to-Speech, presence detection |
 
 ---
 
@@ -19,12 +20,19 @@ A smart IoT weather monitoring system built with M5Stack devices, Google Cloud, 
 
 ```
 caa_iot/
-├── backend/          # Django REST API — serves sensor data and weather info
-├── frontend/         # Next.js web dashboard — historical data visualization
-├── device/           # M5Stack on-device code and cloud voice service
-│   ├── vs.py         # Voice assistant Flask server (Cloud Run) — TTS, STT, Q&A, presence
-│   └── getweather.py # Cloud Function — ingests sensor data into BigQuery
-├── cloudbuild.yaml   # Google Cloud Build CI/CD pipeline
+├── backend/          # Django REST API
+│   ├── core/         # Views, URLs, models
+│   ├── config/       # Django settings
+│   └── Dockerfile
+├── frontend/         # Next.js web dashboard
+│   └── Dockerfile
+├── vs/               # Voice Assistant (Cloud Run)
+│   ├── vs.py         # TTS, STT, Q&A, presence, weather
+│   └── Dockerfile
+├── getweather/       # Data Ingestion (Cloud Run)
+│   ├── getweather.py # Receives M5Stack data → inserts into BigQuery
+│   └── Dockerfile
+├── cloudbuild.yaml   # CI/CD pipeline — auto-deploys all 4 services
 ├── docker-compose.yml
 └── README.md
 ```
@@ -34,25 +42,20 @@ caa_iot/
 ## 🏗️ Architecture
 
 ```
-M5Stack (sensors: ENV III, PIR, Air Quality)
+M5Stack Core2 (ENV III, PIR, Air Quality sensors)
     │
-    ├── POST /ingest ──► getweather (Cloud Function) ──► BigQuery
+    ├── POST / ───────────► getweather (Cloud Run) ──► BigQuery
     │
-    ├── POST /presence ──► vs (Cloud Run) ──► Google TTS ──► M5Stack speaker
-    ├── POST /ask ──────► vs (Cloud Run) ──► BigQuery ──► Google TTS
-    └── POST /tts/stt ──► vs (Cloud Run) ──► Google Speech APIs
+    ├── POST /presence ───► vs (Cloud Run) ──► Google TTS ──► M5Stack speaker
+    ├── POST /ask ────────► vs (Cloud Run) ──► BigQuery ──► Google TTS
+    └── POST /tts + /stt ─► vs (Cloud Run) ──► Google Speech APIs
                 │
-                └──► django-backend (Cloud Run) ──► nextjs-frontend (Cloud Run)
+                └──► django-backend ──► nextjs-frontend
 ```
 
 ---
 
 ## 🚀 How to Deploy
-
-### Prerequisites
-- Google Cloud project with billing enabled
-- BigQuery dataset: `weather.weather-data`
-- APIs enabled: Cloud Speech-to-Text, Cloud Text-to-Speech, BigQuery
 
 ### 1. Clone the repo
 ```bash
@@ -60,45 +63,66 @@ git clone https://github.com/papekaneoff/caa_iot.git
 cd caa_iot
 ```
 
-### 2. Set up environment variables
-Create a `.env` file (never commit this!):
+### 2. Set up Secret Manager on Google Cloud
+Add these secrets in Google Secret Manager:
 ```
-GCP_PROJECT_ID=your-project-id
-OPENWEATHER_API_KEY=your-openweathermap-key
-DJANGO_SECRET_KEY=your-secret-key
+OPENWEATHER_API_KEY = your OpenWeatherMap API key
+DJANGO_SECRET_KEY   = your Django secret key
 ```
 
-### 3. Deploy via Cloud Build
-Connect your GitHub repo to Cloud Build and push to `main` — everything deploys automatically.
+### 3. Connect GitHub to Cloud Build
+- Go to https://console.cloud.google.com/cloud-build/triggers
+- Connect the `papekaneoff/caa_iot` repository
+- Every push to `main` auto-deploys all 4 services
 
-Or trigger manually from the Cloud Build console.
+### 4. Push to deploy
+```bash
+git push origin main
+```
 
-### 4. M5Stack Setup
-- Flash MicroPython firmware on M5Stack Core2
+### 5. M5Stack Setup
 - Open UIFlow 1.0 at flow.m5stack.com
-- Connect to WiFi and paste the device code
-- Update `CLOUD_RUN_URL` with your `vs` service URL
+- Connect M5Stack Core2 to WiFi
+- Set `VS_URL = "https://vs-947281260717.europe-west1.run.app"`
+- Set `GETWEATHER_URL = "https://getweather-947281260717.europe-west1.run.app"`
 
 ---
 
-## 🎙️ Voice Assistant Features
+## 🎙️ Voice Assistant API (`vs`)
 
-The M5Stack supports **natural language Q&A** via voice:
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | Status check → `{"status": "running"}` |
+| `/weather` | GET | Current outdoor weather (OpenWeatherMap) |
+| `/ask` | POST | Natural language Q&A from BigQuery |
+| `/tts` | POST | Text → WAV audio |
+| `/stt` | POST | Audio → transcribed text |
+| `/presence` | POST | Motion detected → weather announcement (1h cooldown) |
+| `/morning` | GET | Morning weather reminder |
 
-| Question | Answer |
-|----------|--------|
-| "What is the temperature now?" | Current indoor temperature from BigQuery |
-| "What was the temperature yesterday?" | Daily average from BigQuery |
-| "Did humidity exceed 50% two days ago?" | Yes/No from BigQuery |
-| "What is the air quality?" | CO2 level and quality rating |
-| "What is the weather?" | OpenWeatherMap current conditions |
+**Example questions:**
+- "What is the temperature now?"
+- "What was the temperature yesterday?"
+- "Did humidity exceed 50% two days ago?"
+- "What is the air quality?"
 
-**Automatic announcements** (PIR motion sensor):
-- 🌤️ Weather + indoor conditions on motion — max **once per hour**
-- 🌂 Rain reminder if rain is forecast
-- 🥶 Cold weather warning (below 5°C)
-- 💧 Low humidity alert (below 40%)
-- 🏭 Bad air quality alert (CO2 above 1000 ppm)
+---
+
+## 📡 Data Ingestion API (`getweather`)
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | POST | Receive sensor data from M5Stack → insert into BigQuery |
+
+---
+
+## 🔌 Backend API (`django-backend`)
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/sensor/` | GET | Latest sensor data |
+| `/api/openweather/` | GET | Outdoor weather data |
+| `/api/health/` | GET | Health check → `{"status": "ok"}` |
 
 ---
 
@@ -106,11 +130,11 @@ The M5Stack supports **natural language Q&A** via voice:
 
 | Variable | Description | Used by |
 |----------|-------------|---------|
-| `GCP_PROJECT_ID` | Google Cloud project ID | vs, getweather |
 | `OPENWEATHER_API_KEY` | OpenWeatherMap API key | vs, backend |
 | `DJANGO_SECRET_KEY` | Django secret key | backend |
 
 > ⚠️ **Never commit `.env` or `service-account.json` to the repo!**
+> All secrets are managed via Google Secret Manager.
 
 ---
 
