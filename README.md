@@ -11,7 +11,7 @@ A smart IoT weather monitoring system built with M5Stack devices, Google Cloud, 
 ## 👥 Team
 | Name | Contribution |
 |------|-------------|
-| Karim Al Khadzh | Backend (Django REST API), Frontend (Next.js dashboard), Cloud infrastructure, BigQuery, OpenWeatherMap integration |
+| Karim Al Khadzh | Backend (Django REST API), Frontend (Next.js dashboard), Cloud infrastructure, BigQuery, OpenWeatherMap integration, M5Stack device UI, data ingestion service (`getweather`) |
 | Pape Kane | Voice assistant Cloud Run service (`vs`), data ingestion service (`getweather`), M5Stack device UI, Speech-to-Text/Text-to-Speech, presence detection |
 
 ---
