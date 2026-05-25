@@ -22,7 +22,6 @@ A smart IoT weather monitoring system built with M5Stack devices, Google Cloud, 
 ## 📁 Repository Structure
 
 ```
-caa_iot/
 ├── backend/          # Django REST API
 │   ├── core/         # Views, URLs, models
 │   ├── config/       # Django settings
@@ -35,6 +34,10 @@ caa_iot/
 ├── getweather/       # Data Ingestion (Cloud Run)
 │   ├── getweather.py # Receives M5Stack data → inserts into BigQuery
 │   └── Dockerfile
+├── device/           # M5Stack on-device code
+│   ├── assistant.py        # Voice assistant device code
+│   └── neon_weather_grid.py # Weather display UI
+├── architecture.html # System architecture diagram
 ├── cloudbuild.yaml   # CI/CD pipeline — auto-deploys all 4 services
 ├── docker-compose.yml
 └── README.md
