@@ -46,3 +46,10 @@ def ingest(request):
     else:
         return str(errors), 500
     
+if __name__ == "__main__":
+    from flask import Flask
+    app = Flask(__name__)
+    app.add_url_rule("/", "ingest", ingest, methods=["POST"])
+    import os
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port)
