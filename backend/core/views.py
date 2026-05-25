@@ -19,7 +19,11 @@ def ms_to_mph(ms):
 
 def meters_to_miles(m):
     return round(m * 0.000621371, 1)
-
+    
+def health(request):
+    return JsonResponse({
+        "status": "ok"
+    })
 
 def sensor_data(request):
     query = """
