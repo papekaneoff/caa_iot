@@ -1,10 +1,14 @@
 from google.cloud import bigquery
 from datetime import datetime, timezone
+from flask import Flask, request
+import os
 
+app = Flask(__name__)
 client = bigquery.Client()
 table_id = "esoteric-storm-496611-p0.weather.weather-data"
 
-def ingest(request):
+@app.route("/", methods=["POST"])
+def ingest():
     request_json = request.get_json()
 
     if not request_json:
@@ -47,9 +51,5 @@ def ingest(request):
         return str(errors), 500
     
 if __name__ == "__main__":
-    from flask import Flask
-    app = Flask(__name__)
-    app.add_url_rule("/", "ingest", ingest, methods=["POST"])
-    import os
     port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port)
