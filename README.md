@@ -18,6 +18,8 @@ A smart IoT weather monitoring system built with M5Stack devices, Google Cloud, 
 | Pape Kane | Voice assistant Cloud Run service (`vs`), data ingestion service (`getweather`), M5Stack device UI, Speech-to-Text/Text-to-Speech, presence detection |
 
 ---
+## 📹 Demo Video
+[Watch the demo video on Google Drive](https://drive.google.com/file/d/1XDpO6Klh6oPg8jjoMilVAbplcS8K6BDr/view?usp=sharing)
 
 ## 📁 Repository Structure
 
@@ -144,5 +146,3 @@ git push origin main
 
 ---
 
-## 📹 Demo Video
-[Watch the demo video on Google Drive](https://drive.google.com/file/d/1XDpO6Klh6oPg8jjoMilVAbplcS8K6BDr/view?usp=sharing)
