@@ -55,6 +55,7 @@ steps:
         "--region", "europe-west1",
         "--platform", "managed",
         "--allow-unauthenticated",
+        "--set-env-vars", "GCP_PROJECT_ID=esoteric-storm-496611-p0",
         "--set-secrets", "OPENWEATHER_API_KEY=OPENWEATHER_API_KEY:latest"
       ]
   # -------------------------
