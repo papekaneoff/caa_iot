@@ -5,4 +5,4 @@ WORKDIR /app
 COPY getweather.py .
 RUN pip install --no-cache-dir google-cloud-bigquery functions-framework
 EXPOSE 8080
-CMD ["functions-framework", "--target=ingest", "--port=8080"]
+CMD ["python", "getweather.py"]
