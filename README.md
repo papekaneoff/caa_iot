@@ -145,4 +145,4 @@ git push origin main
 ---
 
 ## 📹 Demo Video
-[Link to YouTube video — add here]
+[Watch the demo video on Google Drive](https://drive.google.com/file/d/1XDpO6Klh6oPg8jjoMilVAbplcS8K6BDr/view?usp=sharing)
