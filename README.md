@@ -4,7 +4,7 @@ A smart IoT weather monitoring system built with M5Stack devices, Google Cloud, 
 
 ## 🌐 Live URLs
 - **Frontend Dashboard**: https://nextjs-frontend-947281260717.europe-west1.run.app
-- **Backend API**: https://django-backend-947281260717.europe-west1.run.app
+- **Backend API**: https://django-backend-947281260717.europe-west1.run.app/api/health/
 - **Voice Assistant**: https://vs-947281260717.europe-west1.run.app
 - **Data Ingestion**: https://getweather-947281260717.europe-west1.run.app
 
