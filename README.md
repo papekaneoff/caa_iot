@@ -50,7 +50,7 @@ A smart IoT weather monitoring system built with M5Stack devices, Google Cloud, 
 ## 🏗️ Architecture
 
 ```
-M5Stack Core2 (ENV III, PIR, Air Quality sensors)
+M5Stack Core2 (ENV III, PIR,TVOC/eCO2 sensors)
     │
     ├── POST / ───────────► getweather (Cloud Run) ──► BigQuery
     │
@@ -91,8 +91,8 @@ git push origin main
 ### 5. M5Stack Setup
 - Open UIFlow 1.0 at flow.m5stack.com
 - Connect M5Stack Core2 to WiFi
-- Set `VS_URL = "https://vs-947281260717.europe-west1.run.app"`
-- Set `GETWEATHER_URL = "https://getweather-947281260717.europe-west1.run.app"`
+- Set `VS_URL = ""`
+- Set `GETWEATHER_URL = ""`
 
 ---
 
