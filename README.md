@@ -78,17 +78,13 @@ OPENWEATHER_API_KEY = your OpenWeatherMap API key
 DJANGO_SECRET_KEY   = your Django secret key
 ```
 
-### 3. Connect GitHub to Cloud Build
-- Go to https://console.cloud.google.com/cloud-build/triggers
-- Connect the `papekaneoff/caa_iot` repository
-- Every push to `main` auto-deploys all 4 services
 
-### 4. Push to deploy
+### 3. Push to deploy
 ```bash
 git push origin main
 ```
 
-### 5. M5Stack Setup
+### 4. M5Stack Setup
 - Open UIFlow 1.0 at flow.m5stack.com
 - Connect M5Stack Core2 to WiFi
 - Set `VS_URL = ""`
